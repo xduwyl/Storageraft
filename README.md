@@ -1,6 +1,8 @@
-# Storageraft
-CPP wheel project 
-```bash
+# Storge
+
+## 环境配置
+
+```sh
 #!/bin/bash 
 set -e # 遇到错误停止执行
 
@@ -10,7 +12,13 @@ sudo apt update
 
 # 安装基本依赖工具
 sudo apt-get install -y wget unzip make g++ build-essential
+```
 
+### protobuf
+
+安装protobuf
+
+```sh
 # 安装特定版本的 protoc
 echo "安装特定版本的 protoc..."
 wget https://github.com/protocolbuffers/protobuf/releases/download/v3.12.4/protobuf-all-3.12.4.tar.gz
@@ -19,21 +27,17 @@ cd protobuf-3.12.4
 ./configure
 make
 sudo make install
-## 如果安装过 protocol请删除
+# 如果安装过 不同版本的protobuf请删除
 sudo apt-get remove --purge protobuf-compiler libprotobuf-dev
-
 # 验证安装 protoc
 echo "验证 protoc 安装..."
 sudo protoc --version
 version 3.12.4
+```
 
-# 安装 Boost
-echo "安装 Boost..."
-sudo apt-get install -y libboost-dev libboost-test-dev libboost-all-dev
+### cmake
 
-# 安装 CMake
-CMAKE_TAR="cmake-3.26.4-linux-x86_64.tar.gz"
-
+```sh
 # 解压 CMake
 echo "解压 CMake ${CMAKE_TAR}..."
 sudo tar -zxvf ~/${CMAKE_TAR} -C /opt/
@@ -44,6 +48,21 @@ sudo ln -s /opt/cmake-3.26.4-linux-x86_64/bin/cmake /usr/local/bin/cmake
 # 验证安装 CMake
 echo "验证 CMake 安装..."
 sudo cmake --version
+# 安装 CMake
+CMAKE_TAR="cmake-3.26.4-linux-x86_64.tar.gz"
+```
+
+### boost
+
+```sh
+# 安装 Boost
+echo "安装 Boost..."
+sudo apt-get install -y libboost-dev libboost-test-dev libboost-all-dev
+```
+
+### muduo
+
+```sh
 
 # 解压 Muduo
 MUDUO_ZIP="muduo-master.zip"
