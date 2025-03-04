@@ -4,6 +4,8 @@
 #ifndef _SKPLIST_H
 #define _SKPLIST_H
 
+#include <random>
+#include <cstring>
 #include <iostream>
 #include <vector>
 
@@ -18,7 +20,7 @@ public:
     //节点等级
     int level;
     //下一节点指针
-    std::vector<SkiplistNode<K,V>*> forward;
+    SkiplistNode<K,V>** forward;
 
 private:
     //键
@@ -31,20 +33,82 @@ SkiplistNode<K, V>::SkiplistNode(const K &k, const V &v, int level){
     this->key = k;
     this->value = v;
     this->level = level;
-    this->forward.push_back(new SkiplistNode<K, V>(k,v,0));
+    this->forward = new SkiplistNode<K, V> *[level + 1];
+    memset(this->forward, 0, sizeof(SkiplistNode<K, V> *) * (level + 1));
+}
+template <typename K, typename V>
+SkiplistNode<K, V>::~SkiplistNode(){
+    delete[] forward;
+}
+template <typename K, typename V>
+K SkiplistNode<K, V>::get_key() const {
+  return key;
+};
+template <typename K, typename V>
+V SkiplistNode<K, V>::get_value() const {
+  return value;
+};
+template <typename K, typename V>
+void SkiplistNode<K, V>::set_value(V val){
+    this->value = val;
 }
 template <typename K, typename V>
 class SkipList{
 public:
-    SkipList(int max_level);
+    SkipList(int);
     ~SkipList();
+    int get_random_level();
+    SkiplistNode<K, V>*create_node(K, V, int);
+    int insert_element(K, V);
+    void display_list();
+    bool search_element(K, V &value);
+    void delete_element(K);
+    void insert_set_element(K &, V &);
+
+    //递归删除节点
+    void clear(SkiplistNode<K, V> *);
+    int size();
 private:
     //跳表头指针
     SkiplistNode<K, V> *_header;
     //最大等级
     int _max_level;
     //当前等级；
-    int _now_level;
-
+    int _current_level;
+    //当前元素数量
+    int _element_count;
 };
+template <typename K, typename V>
+SkipList<K, V>::SkipList(int max_level) {
+  this->_max_level = max_level;
+  this->_current_level = 0;
+  this->_element_count = 0;
+
+  //最大level 作为头节点
+  K k;
+  V v;
+  this->_header = new SkiplistNode<K, V>(k, v, _max_level);
+};
+template <typename K, typename V>
+SkiplistNode<K, V>* SkipList<K,V>::create_node(const K k, const V v, int level){
+    SkiplistNode<K, V> *node = new SkiplistNode<K, V>(k, v, level);
+    return node;
+}
+template <typename K, typename V>
+int SkipList<K, V>::size() {
+  return _element_count;
+}
+template <typename K, typename V>
+int SkipList<K, V>::get_random_level() {
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    static std::bernoulli_distribution d(0.5); 
+    int k = 1;
+    while (d(gen)) {
+        k++;
+    }
+    k = (k < _max_level) ? k : _max_level;
+    return k;
+};
+
 #endif
