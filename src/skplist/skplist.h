@@ -98,6 +98,41 @@ template <typename K, typename V>
 int SkipList<K, V>::size() {
   return _element_count;
 }
+//增
+template <typename K, typename V>
+int SkipList<K, V>::insert_element(const K key, const V value) {
+}
+//删
+template <typename K, typename V>
+void SkipList<K, V>::delete_element(K key) {
+}
+//查
+template <typename K, typename V>
+bool SkipList<K, V>::search_element(K key, V &value) {
+}
+//改
+template <typename K, typename V>
+void SkipList<K, V>::insert_set_element(K &key, V &value) {
+  V oldValue;
+  if (search_element(key, oldValue)) {
+    delete_element(key);
+  }
+  insert_element(key, value);
+}
+template <typename K, typename V>
+void SkipList<K, V>::display_list() {
+  std::cout << "\n*****Skip List*****"
+            << "\n";
+  for (int i = _current_level; i >= 0; i--) {
+    SkiplistNode<K, V> *node = this->_header->forward[i];
+    std::cout << "Level " << i << ": ";
+    while (node != NULL) {
+      std::cout << node->get_key() << ":" << node->get_value() << ";";
+      node = node->forward[i];
+    }
+    std::cout << std::endl;
+  }
+}
 template <typename K, typename V>
 int SkipList<K, V>::get_random_level() {
     static std::random_device rd;
