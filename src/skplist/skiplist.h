@@ -61,9 +61,13 @@ public:
     SkiplistNode<K, V>*create_node(K, V, int);
     int insert_element(K, V);
     void display_list();
-    bool search_element(K, V &value);
+    bool search_element(K);
     void delete_element(K);
-    void insert_set_element(K &, V &);
+    void insert_set_element(K , V);
+    //存储文件
+    std::string dump_file();
+    //加载文件
+    void load_file(const std::string &dumpStr);
 
     //递归删除节点
     void clear(SkiplistNode<K, V> *);
@@ -210,7 +214,7 @@ void SkipList<K, V>::delete_element(K key) {
 }
 //查
 template <typename K, typename V>
-bool SkipList<K, V>::search_element(K key, V &value) {
+bool SkipList<K, V>::search_element(K key) {
     std::cout << "search_element-----------------" << std::endl;
     SkiplistNode<K, V> *cur = _header;
     for (int i = _current_level; i >= 0;--i){
@@ -220,7 +224,7 @@ bool SkipList<K, V>::search_element(K key, V &value) {
     }
     cur = cur->forward[0];
     if(cur&&cur->get_key()==key){
-        value = cur->get_value();
+        V value = cur->get_value();
         std::cout << "Found key: " << key << ", value: " << value << std::endl;
         return true;
     }
@@ -229,9 +233,9 @@ bool SkipList<K, V>::search_element(K key, V &value) {
 }
 //改(删了加)
 template <typename K, typename V>
-void SkipList<K, V>::insert_set_element(K &key, V &value) {
+void SkipList<K, V>::insert_set_element(const K key, const V value) {
   V oldValue;
-  if (search_element(key, oldValue)) {
+  if (search_element(key)) {
     delete_element(key);
   }
   insert_element(key, value);

@@ -1,0 +1,19 @@
+# 忽略 CMake 生成的中间文件和构建目录
+**/build/
+**/CMakeFiles/
+**/cmake_install.cmake
+**/CMakeCache.txt
+**/Makefile
+**/*.a
+**/*.o
+**/*.d
+**/*.out
+
+# # 忽略可执行文件
+# **/SkipListTest
+# **/StressTest
+
+# 忽略其他临时文件
+**/*.log
+**/*.tmp
+**/*.txt
