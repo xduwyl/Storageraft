@@ -9,11 +9,11 @@
 #include <iostream>
 #include <vector>
 #include <mutex>
-
+#include <fstream> 
 
 #include <boost/serialization/access.hpp>
-// #include <boost/archive/text_oarchive.hpp>  // 文本输出归档
-// #include <boost/archive/text_iarchive.hpp>  // 文本输入归档
+#include <boost/archive/text_oarchive.hpp>  // 文本输出归档
+#include <boost/archive/text_iarchive.hpp>  // 文本输入归档
 #include <boost/serialization/vector.hpp>   // 支持 std::vector 序列化
 #include <sstream>    
 
@@ -73,7 +73,7 @@ public:
     void delete_element(K);
     void insert_set_element(K , V);
     //存储文件
-    std::string dump_file();
+    void dump_file(const std::string &filename);
     //加载文件
     void load_file(const std::string &dumpStr);
 
@@ -298,31 +298,49 @@ void SkipListDump<K, V>::insert(const  SkiplistNode<K, V> &node) {
 }
 
 template <typename K, typename V>
-std::string SkipList<K, V>::dump_file(){
+void SkipList<K, V>::dump_file(const std::string &filename) {
     SkiplistNode<K, V> *cur = this->_header->forward[0];
     SkipListDump<K, V> dumper;
-    while(cur){
+    while (cur) {
         dumper.insert(*cur);
         cur = cur->forward[0];
     }
-    std::stringstream ss;
-    // boost::archive::text_oarchive oa(ss);
-    // oa << dumper;
-    return ss.str();
-}
-template <typename K, typename V>
-void SkipList<K, V>::load_file(const std::string &dumpStr){
-    if (dumpStr.empty()) {
+
+    // 打开文件流
+    std::ofstream ofs(filename);
+    if (!ofs.is_open()) {
+        std::cerr << "无法打开文件: " << filename << std::endl;
         return;
     }
+
+    // 将数据序列化到文件
+    boost::archive::text_oarchive oa(ofs);
+    oa << dumper;
+
+    std::cout << "数据已保存到文件: " << filename << std::endl;
+}
+template <typename K, typename V>
+void SkipList<K, V>::load_file(const std::string &filename) {
+    std::ifstream ifs(filename);
+    if (!ifs.is_open()) {
+        std::cerr << "无法打开文件: " << filename << std::endl;
+        return;
+    }
+
     SkipListDump<K, V> dumper;
-    std::stringstream iss(dumpStr);
-    // boost::archive::text_iarchive ia(iss);
-    // ia >> dumper;
-    for (int i = 0; i < dumper.keyDumpVt_.size(); ++i)
-    {
+    try {
+        boost::archive::text_iarchive ia(ifs);
+        ia >> dumper;
+    } catch (const boost::archive::archive_exception &e) {
+        std::cerr << "反序列化失败: " << e.what() << std::endl;
+        return;
+    }
+
+    for (int i = 0; i < dumper.keyDumpVt_.size(); ++i) {
         insert_element(dumper.keyDumpVt_[i], dumper.valDumpVt_[i]);
     }
+
+    std::cout << "数据已从文件加载: " << filename << std::endl;
 }
 
 #endif

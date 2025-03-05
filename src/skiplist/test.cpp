@@ -1,6 +1,6 @@
 #include <iostream>
 #include "skiplist.h"
-#define FILE_PATH "./store/dumpFile"
+#define FILE_PATH "../store/dumpFile.txt"
 
 int main() {
 
@@ -17,7 +17,7 @@ int main() {
     skipList.insert_set_element(20, "hhhhhhh");
     std::cout << "skipList size:" << skipList.size() << std::endl;
 
-    skipList.dump_file();
+    skipList.dump_file(FILE_PATH);
 
     skipList.load_file(FILE_PATH);
 
